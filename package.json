@@ -1,0 +1,61 @@
+{
+  "name": "siteframe",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "vite --config apps/web-dashboard/vite.config.ts",
+    "build": "tsx scripts/build.ts",
+    "typecheck": "tsc --noEmit && tsc -p apps/figma-plugin/tsconfig.json --noEmit",
+    "test": "vitest run --config vitest.config.ts",
+    "test:integration": "tsx tests/integration.ts",
+    "test:extension": "tsx tests/extension.ts",
+    "test:figma": "tsx tests/acceptance.ts",
+    "test:edge-cases": "tsx tests/edge-cases.ts",
+    "test:text-browser": "tsx tests/text-browser.ts",
+    "test:font-browser": "tsx tests/font-browser.ts",
+    "test:font-capture": "tsx tests/font-capture-browser.ts",
+    "test:raster-browser": "tsx tests/raster-browser.ts",
+    "test:animation-browser": "tsx tests/animation-browser.ts",
+    "test:dashboard": "tsx tests/dashboard.ts",
+    "package:release": "tsx scripts/package.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "scan": "tsx apps/crawler-worker/src/cli.ts",
+    "validate:visual": "tsx apps/crawler-worker/src/validate-cli.ts",
+    "api": "tsx apps/api/src/index.ts",
+    "worker": "tsx apps/crawler-worker/src/worker.ts",
+    "check": "npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "3.1132.0",
+    "bullmq": "6.3.6",
+    "pg": "8.23.0",
+    "playwright": "1.63.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "sharp": "0.35.4",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "1.138.0",
+    "@types/chrome": "0.2.9",
+    "@types/node": "26.6.0",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "esbuild": "0.28.2",
+    "prettier": "3.9.6",
+    "tsx": "4.23.13",
+    "typescript": "7.0.2",
+    "vite": "8.3.0",
+    "vitest": "5.0.1"
+  }
+}

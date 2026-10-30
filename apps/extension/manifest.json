@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Siteframe — Website to Figma",
+  "version": "0.1.0",
+  "minimum_chrome_version": "120",
+  "description": "Discover safe website routes and interface states, then export editable layers for Figma.",
+  "permissions": ["activeTab", "scripting", "storage", "tabs", "declarativeNetRequest"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "background": { "service_worker": "service-worker.js", "type": "module" },
+  "action": { "default_popup": "popup.html", "default_title": "Capture with Siteframe" },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; base-uri 'none'"
+  }
+}

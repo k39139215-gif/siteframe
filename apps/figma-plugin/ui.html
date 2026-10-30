@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 28px;
+        background: #141a14;
+        color: #ecf1e8;
+        font:
+          12px Inter,
+          system-ui,
+          sans-serif;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 36px;
+      }
+      header strong {
+        font-size: 21px;
+        letter-spacing: -1px;
+      }
+      header span {
+        font-size: 9px;
+        letter-spacing: 1px;
+        color: #92a685;
+      }
+      .eyebrow {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        color: #a3c88e;
+      }
+      h1 {
+        font-size: 32px;
+        font-weight: 500;
+        letter-spacing: -1.6px;
+        line-height: 1.12;
+        margin: 14px 0;
+      }
+      p {
+        color: #93a38a;
+        line-height: 1.7;
+      }
+      .upload {
+        display: block;
+        padding: 22px;
+        border: 1px dashed #a0c68b66;
+        border-radius: 12px;
+        margin: 24px 0 18px;
+        background: #ffffff03;
+        cursor: pointer;
+      }
+      .upload strong {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+      .upload input {
+        max-width: 100%;
+        font-size: 10px;
+        color: #93a38a;
+      }
+      button {
+        width: 100%;
+        padding: 14px 18px;
+        border: 0;
+        border-radius: 9px;
+        background: #b3ed90;
+        color: #17290f;
+        font:
+          600 12px Inter,
+          system-ui;
+        cursor: pointer;
+        transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.2, 1.2);
+      }
+      button:active {
+        transform: scale(0.97);
+      }
+      button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      button:focus-visible,
+      input:focus-visible {
+        outline: 2px solid white;
+        outline-offset: 3px;
+      }
+      #status {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        margin: 15px 0;
+        color: #b4c3a8;
+        font-size: 11px;
+        max-height: 120px;
+        overflow: auto;
+      }
+      #report {
+        display: none;
+        background: transparent;
+        color: #b3ed90;
+        border: 1px solid #ffffff20;
+        margin-top: 10px;
+      }
+      #fonts {
+        display: none;
+        margin: 12px 0 4px;
+        padding: 10px 12px;
+        border: 1px solid #ffffff1a;
+        color: #cfe0c2;
+        font-size: 10px;
+        line-height: 1.6;
+        text-align: left;
+      }
+      #fonts strong,
+      #fonts span,
+      #fonts em {
+        display: block;
+      }
+      #fonts strong {
+        color: #d7ffb8;
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      #fonts em {
+        margin-top: 6px;
+        color: #7f9573;
+        font-style: normal;
+      }
+      small {
+        display: block;
+        color: #6f8465;
+        font-size: 10px;
+        text-align: center;
+        margin-top: 18px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header><strong>◫ siteframe</strong><span>FIGMA IMPORT</span></header>
+    <div class="eyebrow">FROM WEBSITE TO WORKSPACE</div>
+    <h1>Real layers.<br />Ready for your ideas.</h1>
+    <p>
+      Import every captured screen as an editable frame, side-by-side on your current Figma page.
+    </p>
+    <label class="upload" for="paste"><strong>Paste a copied element · imports automatically</strong>
+      <textarea id="paste" aria-label="Paste a Siteframe element" placeholder="Click here and press Ctrl+V (⌘V on Mac)" rows="2" style="display:block;width:100%;box-sizing:border-box;margin-top:8px;padding:10px;border:1px solid #829477;border-radius:6px;font:12px system-ui;resize:vertical"></textarea>
+      <div id="paste-status" role="status" aria-live="polite" style="margin-top:8px;font-size:12px;overflow-wrap:anywhere">Copy in the extension, then paste here. No file download needed.</div>
+    </label>
+    <label class="upload"
+      ><strong>Choose your reconstruction package</strong
+      ><input id="file" type="file" accept=".json,application/json" /></label
+    ><button id="import" disabled>Import editable layers ↗</button>
+    <div id="status" role="status" aria-live="polite">No package selected.</div>
+    <div id="fonts" role="alert"></div>
+    <button id="retry-fonts">Show missing text / restore fonts</button>
+    <button id="report">Download import report ↓</button
+    ><button id="preview" hidden>Download Figma PNGs ↓</button
+    ><small>Local import · no uploads · no account connection</small>
+    <script>"use strict";var SiteframeSvg=(()=>{var F=Object.defineProperty;var A=Object.getOwnPropertyDescriptor;var B=Object.getOwnPropertyNames;var T=Object.prototype.hasOwnProperty;var D=(t,r)=>{for(var e in r)F(t,e,{get:r[e],enumerable:!0})},z=(t,r,e,a)=>{if(r&&typeof r=="object"||typeof r=="function")for(let n of B(r))!T.call(t,n)&&n!==e&&F(t,n,{get:()=>r[n],enumerable:!(a=A(r,n))||a.enumerable});return t};var P=t=>z(F({},"__esModule",{value:!0}),t);var X={};D(X,{prepareSvgAssets:()=>H});var J=new Set(["svg","g","path","rect","circle","ellipse","line","polyline","polygon","defs","linearGradient","radialGradient","stop","clipPath","mask","title","desc","use","symbol","pattern","image","filter","feFlood","feColorMatrix","feOffset","feGaussianBlur","feComposite","feBlend","feMerge","feMergeNode","feDropShadow","feComponentTransfer","feFuncR","feFuncG","feFuncB","feFuncA"]),I=new Set(["fill","fill-rule","fill-opacity","stroke","stroke-width","stroke-linecap","stroke-linejoin","stroke-miterlimit","stroke-dasharray","stroke-dashoffset","stroke-opacity","opacity","color","stop-color","stop-opacity","clip-path","clip-rule","mask","filter","vector-effect","display","visibility","flood-color","flood-opacity","color-interpolation-filters","paint-order","shape-rendering","image-rendering","color-interpolation","mask-type"]),W=new Set([...I,"xmlns","xmlns:xlink","viewBox","width","height","x","y","x1","x2","y1","y2","cx","cy","r","rx","ry","d","points","transform","gradientUnits","gradientTransform","spreadMethod","offset","id","clipPathUnits","maskUnits","maskContentUnits","preserveAspectRatio","href","xlink:href","version","fx","fy","fr","patternUnits","patternContentUnits","patternTransform","filterUnits","primitiveUnits","in","in2","result","type","values","mode","operator","k1","k2","k3","k4","dx","dy","stdDeviation","edgeMode","tableValues","slope","intercept","amplitude","exponent"]),q=/^#[\w.:-]+$/,C=t=>t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");function O(t){return t.replace(/&([^;\s]+);|&/g,(r,e)=>{let a={amp:"&",lt:"<",gt:">",quot:'"',apos:"'"};if(e&&Object.prototype.hasOwnProperty.call(a,e))return a[e];let n=/^#(x[0-9a-f]+|[0-9]+)$/i.exec(e??"");if(!n)throw new Error("Unsupported SVG entity");let c=n[1].startsWith("x")||n[1].startsWith("X")?parseInt(n[1].slice(1),16):Number(n[1]);if(!Number.isInteger(c)||c<32||c>1114111||c>=55296&&c<=57343)throw new Error("Invalid SVG entity");return String.fromCodePoint(c)})}function N(t,r,e){if(/[<>\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(e))throw new Error("Malformed SVG value");if(r==="xmlns"||r==="xmlns:xlink"){if(e!==(r==="xmlns"?"http://www.w3.org/2000/svg":"http://www.w3.org/1999/xlink"))throw new Error("Unsupported SVG namespace");return e}if(/href$/.test(r)){if(q.test(e)||t==="image"&&/^data:image\/(?:png|jpeg|gif|webp|avif);base64,[a-z0-9+/]+={0,2}$/i.test(e))return e;throw new Error("External SVG references are forbidden; only local references or embedded raster images are permitted")}if(/url\s*\(/i.test(e)){let a=/^url\(\s*(["']?)(#[\w.:-]+)\1\s*\)$/i.exec(e);if(!a)throw new Error("External SVG paint is forbidden");return"url("+a[2]+")"}if(/(?:javascript\s*:|data\s*:|https?\s*:|\/\/|\\|expression\s*\(|@import)/i.test(e))throw new Error("External SVG references are forbidden");return e}function k(t){if(t.length>2e6||/\u0000/.test(t))throw new Error("SVG exceeds safety limits");if(t=t.replace(/^\uFEFF?\s*<\?xml\s+[^?]*\?>/i,"").replace(/<!--[\s\S]*?-->/g,""),/<!|<\?/.test(t))throw new Error("SVG contains unsupported declarations or entities");let r=0,e=0,a=0,n=[],c=new Map,o=[],f=[],u=/<(\/?)([A-Za-z][\w:-]*)([^<>]*?)(\/?)>/g,s;for(;s=u.exec(t);){let l=t.slice(r,s.index),g=f[f.length-1];if(l.trim()&&g?.tag!=="title"&&g?.tag!=="desc")throw new Error("SVG contains unsupported text");if(/[<>]/.test(l))throw new Error("Malformed SVG");o.push(C(O(l))),r=u.lastIndex;let y=!!s[1],d=s[2],S=s[3],x=!!s[4];if(!J.has(d))throw new Error("Unsupported SVG element: "+d);if(y){if(S.trim()||x||f.pop()?.tag!==d)throw new Error("Malformed SVG nesting");o.push("</"+d+">");continue}if(!f.length&&(d!=="svg"||++e!==1))throw new Error("Malformed SVG document");if(++a>1e4||f.length>100)throw new Error("SVG complexity exceeds safety limits");let p=new Map,R=new Set,_="",G=0,$=/\s+([\w:-]+)\s*=\s*("[^"]*"|'[^']*')/g,E;for(;E=$.exec(S);){if(S.slice(G,E.index).trim())throw new Error("Malformed SVG attribute");G=$.lastIndex;let i=E[1],b=O(E[2].slice(1,-1));if(R.has(i))throw new Error("Duplicate SVG attribute");if(R.add(i),i==="style"){_=b;continue}if(!(/^(?:aria-|data-)/.test(i)||["class","role","focusable","tabindex","pointer-events","cursor"].includes(i))){if(!W.has(i))throw new Error("Unsupported SVG attribute: "+i);p.set(i,N(d,i,b))}}if(S.slice(G).trim())throw new Error("Malformed SVG attributes");for(let i of _.split(";")){let b=i.indexOf(":");if(b<0)continue;let U=i.slice(0,b).trim().toLowerCase();if(!I.has(U))continue;let j=i.slice(b+1).replace(/\s*!important\s*$/i,"").trim();p.set(U,N(d,U,j))}let V=p.get("color")&&p.get("color").toLowerCase()!=="currentcolor"?p.get("color"):g?.color;for(let i of["fill","stroke","stop-color","flood-color"])V&&p.get(i)?.toLowerCase()==="currentcolor"&&p.set(i,V);let v=n.length;n.push({children:[],reference:d==="use"?(p.get("href")??p.get("xlink:href"))?.slice(1):void 0}),g&&n[g.index].children.push(v);let M=p.get("id");M&&!c.has(M)&&c.set(M,v),o.push("<"+d+[...p].map(([i,b])=>` ${i}="${C(b)}"`).join("")+(x?"/>":">")),x||f.push({tag:d,color:V,index:v})}if(f.length||e!==1||t.slice(r).trim())throw new Error("Malformed SVG document");let m=new Set,w=new Map,h=(l,g)=>{if(m.has(l))throw new Error("Cyclic SVG use reference");if(g>100)throw new Error("SVG reference depth exceeds safety limits");let y=w.get(l);if(y!==void 0)return y;m.add(l);let d=n[l],S=d.reference?c.get(d.reference):void 0,x=1;for(let p of[...d.children,...S===void 0?[]:[S]])if(x+=h(p,g+1),x>1e5)throw new Error("SVG instance expansion exceeds safety limits");return m.delete(l),w.set(l,x),x};return h(0,0),o.join("").trim()}async function L(t,r,e){let a=k(t),n=Math.min(2,2048/Math.max(r,e,1)),c=Math.max(1,Math.round(r*n)),o=Math.max(1,Math.round(e*n)),f=a.replace(/<svg\b([^>]*)>/,(w,h)=>{let l=Number(/\swidth="([\d.]+)(?:px)?"/.exec(h)?.[1]),g=Number(/\sheight="([\d.]+)(?:px)?"/.exec(h)?.[1]);return!/\sviewBox=/.test(h)&&l>0&&g>0&&(h+=` viewBox="0 0 ${l} ${g}"`),`<svg${h.replace(/\s(?:width|height)="[^"]*"/g,"")} width="${Math.max(1,r)}" height="${Math.max(1,e)}">`}),u=URL.createObjectURL(new Blob([f],{type:"image/svg+xml"})),s=new Image,m;try{await new Promise((g,y)=>{s.onload=()=>g(),s.onerror=()=>y(new Error("SVG raster decode failed")),m=setTimeout(()=>y(new Error("SVG raster decode timed out")),1200),s.src=u});let w=document.createElement("canvas");w.width=c,w.height=o;let h=w.getContext("2d");if(!h)throw new Error("Image canvas unavailable");h.drawImage(s,0,0,c,o);let l=w.toDataURL("image/png").split(",")[1];if(l.length>1e6)throw new Error("SVG raster backup exceeds budget");return{data:l,mime:"image/png",width:c,height:o}}finally{m&&clearTimeout(m),s.onload=s.onerror=null,s.src="",URL.revokeObjectURL(u)}}async function H(t,r=8e7){let e=t.assets.filter(o=>o.type==="svg"&&o.data),a=0,n=JSON.stringify(t).length,c=Date.now();await Promise.all(Array.from({length:Math.min(3,e.length)},async()=>{for(let o=e.shift();o;o=e.shift())try{let f=k(o.data),u=JSON.stringify(f).length-JSON.stringify(o.data).length;if(n+u>r)continue;if(o.data=f,n+=u,!o.rasterFallback&&/<(?:filter|pattern|image|use)\b/.test(f)&&Date.now()-c<8e3&&a<8e6){let s=await L(f,o.width,o.height),m=JSON.stringify({rasterFallback:s}).length-1;a+s.data.length<=8e6&&n+m<=r&&(o.rasterFallback=s,a+=s.data.length,n+=m)}}catch{}}))}return P(X);})();
+</script>
+    <script>
+      let text = '',
+        importing = false,
+        report = null;
+      const file = document.getElementById('file'),
+        button = document.getElementById('import'),
+        status = document.getElementById('status'),
+        reportButton = document.getElementById('report');
+      const fonts = document.getElementById('fonts');
+      const paste = document.getElementById('paste');
+      const pasteStatus = document.getElementById('paste-status');
+      const acceptPaste = async (value) => {
+        if (importing) return;
+        text = ''; button.disabled = true;
+        try {
+          if (value.length > 80000000) throw new Error('Copied element exceeds the 80 MB limit.');
+          const pkg = JSON.parse(value.replace(/^\uFEFF/, '').trim());
+          if (pkg.version !== '1.0' || !Array.isArray(pkg.screens) || !Array.isArray(pkg.assets))
+            throw new Error('Copy an element using the Siteframe extension first.');
+          if (!pkg.screens.length) throw new Error('Copied package has no captured elements. Select and copy an element again.');
+          text = JSON.stringify(pkg); paste.value = ''; file.value = '';
+          paste.placeholder = 'Element received · importing editable layers…';
+          pasteStatus.textContent = 'Received ' + pkg.screens.length + ' frame(s) · importing editable layers…';
+          await importSelected();
+        } catch (error) {
+          paste.placeholder = 'Click here and press Ctrl+V (⌘V on Mac)';
+          status.textContent = error instanceof SyntaxError ? 'Clipboard does not contain a Siteframe element.' : error.message;
+          pasteStatus.textContent = status.textContent;
+        }
+      };
+      paste.addEventListener('paste', async (event) => {
+        if (importing) { event.preventDefault(); return; }
+        const value = event.clipboardData?.getData('text/plain') || event.clipboardData?.getData('Text');
+        if (!value) {
+          text = ''; button.disabled = true;
+          status.textContent = 'No clipboard text received. In the extension choose Copy manually, press Ctrl+C, then paste here.';
+          pasteStatus.textContent = status.textContent;
+          // Some embedded hosts insert the value without exposing clipboardData.
+          // Allow that default insertion; the input handler below receives it.
+          return;
+        }
+        event.preventDefault();
+        await acceptPaste(value);
+      });
+      paste.addEventListener('input', async () => {
+        if (!importing && paste.value.trim()) await acceptPaste(paste.value);
+      });
+      const previewButton = document.getElementById('preview');
+      const retryFonts = document.getElementById('retry-fonts');
+      const showMissingFonts = (missing) => {
+        fonts.replaceChildren();
+        fonts.style.display = missing.length ? 'block' : 'none';
+        if (!missing.length) return;
+        const title = document.createElement('strong');
+        title.textContent = 'Exact website fonts unavailable';
+        fonts.appendChild(title);
+        for (const face of missing) {
+          const line = document.createElement('span');
+          line.textContent = face.nodeIds.length + ' × ' + face.requested + ' — ' + face.reason;
+          fonts.appendChild(line);
+        }
+        const note = document.createElement('em');
+        note.textContent =
+          'Missing fonts use available fallback fonts so text remains visible and editable. Font metrics may differ; substitutions and original font requests are saved in the report. Use Show missing text / restore fonts to convert older Siteframe placeholder boxes or restore exact fonts after enabling them. Existing text edits and positions are preserved. Website WOFF/WOFF2 files alone do not make fonts available to the Figma Plugin API.';
+        fonts.appendChild(note);
+      };
+      retryFonts.onclick = () => {
+        if (importing) return;
+        importing = true;
+        paste.readOnly = true;
+        file.disabled = true;
+        retryFonts.disabled = true;
+        button.disabled = true;
+        parent.postMessage({ pluginMessage: { type: 'retry-fonts' } }, '*');
+      };
+      const download = (blob, name) => {
+        const url = URL.createObjectURL(blob),
+          a = document.createElement('a');
+        a.href = url;
+        a.download = name;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      };
+      previewButton.onclick = () =>
+        parent.postMessage({ pluginMessage: { type: 'export-preview' } }, '*');
+      file.onchange = async () => {
+        if (importing) return;
+        const f = file.files[0];
+        if (!f) return;
+        text = ''; button.disabled = true;
+        if (f.size > 80000000) {
+          status.textContent = 'Package exceeds the 80 MB limit.';
+          return;
+        }
+        text = await f.text();
+        button.disabled = false;
+        status.textContent = f.name + ' · ' + (f.size / 1024 / 1024).toFixed(1) + ' MB';
+      };
+      // The UI has browser codecs; the plugin sandbox does not. This also repairs
+      // older local packages with WebP/AVIF payloads without re-fetching the site.
+      const compatibleImages = async (value) => {
+        const pkg = JSON.parse(value);
+        if (!Array.isArray(pkg.assets) || pkg.assets.length > 10000)
+          throw new Error('Invalid asset list');
+        if (typeof SiteframeSvg !== 'undefined') {
+          status.textContent = 'Preparing SVG icons and logos…';
+          await SiteframeSvg.prepareSvgAssets(pkg);
+        }
+        for (const asset of pkg.assets) {
+          if (
+            !asset.data ||
+            asset.type !== 'raster' ||
+            !['image/webp', 'image/avif'].includes(asset.mime)
+          )
+            continue;
+          status.textContent = 'Converting image for Figma…';
+          const bytes = Uint8Array.from(atob(asset.data), (c) => c.charCodeAt(0));
+          const bitmap = await createImageBitmap(new Blob([bytes], { type: asset.mime }));
+          try {
+            const scale = Math.min(1, 4096 / Math.max(bitmap.width, bitmap.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+            canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+            canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+            let data = canvas.toDataURL('image/png').split(',')[1],
+              mime = 'image/png';
+            if (data.length > 4000000) {
+              const pixels = canvas
+                .getContext('2d')
+                .getImageData(0, 0, canvas.width, canvas.height).data;
+              let opaque = true;
+              for (let i = 3; i < pixels.length; i += 4)
+                if (pixels[i] !== 255) {
+                  opaque = false;
+                  break;
+                }
+              if (opaque) {
+                data = canvas.toDataURL('image/jpeg', 0.94).split(',')[1];
+                mime = 'image/jpeg';
+              } else
+                for (let i = 0; i < 8 && data.length > 4000000; i++) {
+                  canvas.width = Math.max(1, Math.round(canvas.width * 0.75));
+                  canvas.height = Math.max(1, Math.round(canvas.height * 0.75));
+                  canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+                  data = canvas.toDataURL('image/png').split(',')[1];
+                }
+            }
+            if (data.length > 4000000)
+              throw new Error(
+                'Converted image exceeds the 3 MB limit. Recapture with the updated extension.',
+              );
+            asset.data = data;
+            asset.mime = mime;
+            asset.width = canvas.width;
+            asset.height = canvas.height;
+          } finally {
+            bitmap.close();
+          }
+        }
+        return JSON.stringify(pkg);
+      };
+      const importSelected = async () => {
+        if (importing || !text) return;
+        importing = true;
+        paste.readOnly = true;
+        file.disabled = true;
+        button.disabled = true;
+        retryFonts.disabled = true;
+        status.textContent = 'Validating package…';
+        try {
+          const prepared = await compatibleImages(text);
+          parent.postMessage({ pluginMessage: { type: 'import', text: prepared } }, '*');
+        } catch (error) {
+          status.textContent = String(error);
+          pasteStatus.textContent = status.textContent;
+          importing = false;
+          paste.readOnly = false;
+          file.disabled = false;
+          paste.placeholder = 'Import failed · paste again or click Import to retry';
+          button.disabled = false;
+          retryFonts.disabled = false;
+        }
+      };
+      button.onclick = importSelected;
+      onmessage = (event) => {
+        const message = event.data.pluginMessage;
+        if (!message) return;
+        if (message.type === 'preview') {
+          download(new Blob([message.bytes], { type: 'image/png' }), message.name);
+          status.textContent = 'Exported ' + message.name + ' from Figma.';
+        }
+        if (message.type === 'progress') {
+          status.textContent = message.text;
+          pasteStatus.textContent = message.text;
+        }
+        if (message.type === 'error') {
+          importing = false; paste.readOnly = false; file.disabled = false;
+          paste.placeholder = 'Import failed · paste again or click Import to retry';
+          status.textContent = message.text;
+          pasteStatus.textContent = message.text;
+          button.disabled = !text;
+          retryFonts.disabled = false;
+        }
+        if (message.type === 'fonts-retried') {
+          importing = false; paste.readOnly = false; file.disabled = false;
+          const repair = message.report;
+          report = { ...(report || {}), fontRepair: repair };
+          const pending = repair.missingFonts.reduce((sum, f) => sum + f.nodeIds.length, 0);
+          status.textContent =
+            repair.repaired +
+            ' exact fonts restored · ' +
+            (repair.fallback || 0) +
+            ' text layers made visible · ' +
+            pending +
+            ' exact font requests remaining' +
+            (repair.warnings.length ? '\n' + repair.warnings.join('\n') : '');
+          pasteStatus.textContent = status.textContent;
+          showMissingFonts(repair.missingFonts);
+          reportButton.style.display = 'block';
+          button.disabled = !text;
+          retryFonts.disabled = false;
+        }
+        if (message.type === 'complete') {
+          importing = false; paste.readOnly = false; file.disabled = false;
+          paste.placeholder = 'Imported · paste another copied element here';
+          report = message.report;
+          status.textContent =
+            report.screens +
+            ' screens · ' +
+            report.layers +
+            ' layers · ' +
+            report.components +
+            ' components\n' +
+            (report.fontSubstitutions || []).length +
+            ' text layers use fallback fonts · ' +
+            report.geometry.length +
+            ' geometry differences · ' +
+            (report.structure?.layersReorderedForReading ?? 0) +
+            ' layers reordered to read top-to-bottom';
+          showMissingFonts(report.missingFonts || []);
+          pasteStatus.textContent = 'Imported ' + report.screens + ' frame(s) · ' + report.layers + ' editable layers.' +
+            ((report.missingFonts || []).length ? ' Fallback fonts keep text visible; see font details below.' : ' Paste another element to continue.');
+          reportButton.style.display = 'block';
+          previewButton.hidden = false;
+          button.disabled = false;
+          retryFonts.disabled = false;
+        }
+      };
+      reportButton.onclick = () => {
+        const url = URL.createObjectURL(
+          new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' }),
+        );
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'siteframe-import-report.json';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      };
+    </script>
+  </body>
+</html>

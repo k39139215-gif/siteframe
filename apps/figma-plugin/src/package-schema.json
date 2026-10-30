@@ -1,0 +1,624 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "version": { "type": "string", "const": "1.0" },
+    "project": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 300 },
+        "origin": {
+          "type": "string",
+          "maxLength": 4096,
+          "pattern": "^https?:\\/\\/(?![^/]*@)[a-z0-9\\[\\].:-]+(?:[/?#][^\\s]*)?$",
+          "x-patternFlags": "i"
+        },
+        "createdAt": { "type": "string" },
+        "config": {
+          "type": "object",
+          "properties": {
+            "captureMode": {
+              "default": "site",
+              "type": "string",
+              "enum": ["site", "page", "viewport", "element"]
+            },
+            "maxPages": { "default": 50, "type": "integer", "minimum": 1, "maximum": 200 },
+            "maxStatesPerPage": { "default": 20, "type": "integer", "minimum": 1, "maximum": 100 },
+            "maxDepth": { "default": 5, "type": "integer", "minimum": 0, "maximum": 12 },
+            "maxActionsPerState": {
+              "default": 30,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "maxTotalStates": { "default": 200, "type": "integer", "minimum": 1, "maximum": 1000 },
+            "timeoutMs": {
+              "default": 600000,
+              "type": "number",
+              "minimum": 1000,
+              "maximum": 3600000
+            },
+            "operationTimeoutMs": {
+              "default": 30000,
+              "type": "number",
+              "minimum": 1000,
+              "maximum": 60000
+            },
+            "settleMs": { "default": 350, "type": "number", "minimum": 50, "maximum": 3000 },
+            "discoverUIStates": { "default": true, "type": "boolean" },
+            "captureAssets": { "default": true, "type": "boolean" },
+            "detectComponents": { "default": true, "type": "boolean" },
+            "fullPage": { "default": true, "type": "boolean" },
+            "maxScrollSteps": { "default": 20, "type": "integer", "minimum": 0, "maximum": 100 },
+            "maxNodes": { "default": 6000, "type": "integer", "minimum": 10, "maximum": 20000 },
+            "trustedOrigins": {
+              "default": [],
+              "maxItems": 10,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 4096,
+                "pattern": "^https?:\\/\\/(?![^/]*@)[a-z0-9\\[\\].:-]+(?:[/?#][^\\s]*)?$",
+                "x-patternFlags": "i"
+              }
+            },
+            "viewport": {
+              "default": { "width": 1440, "height": 900 },
+              "type": "object",
+              "properties": {
+                "width": { "type": "integer", "minimum": 320, "maximum": 3840 },
+                "height": { "type": "integer", "minimum": 320, "maximum": 2160 }
+              },
+              "required": ["width", "height"]
+            },
+            "debug": { "default": false, "type": "boolean" }
+          }
+        }
+      },
+      "required": ["name", "origin", "createdAt", "config"]
+    },
+    "screens": {
+      "maxItems": 1000,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "diagnostics": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "event": { "type": "string" },
+                "data": {
+                  "type": "object",
+                  "propertyNames": { "type": "string" },
+                  "additionalProperties": {}
+                }
+              },
+              "required": ["event", "data"]
+            }
+          },
+          "landmarks": { "type": "array", "items": { "type": "string" } },
+          "url": { "type": "string" },
+          "title": { "type": "string" },
+          "viewport": {
+            "type": "object",
+            "properties": { "width": { "type": "number" }, "height": { "type": "number" } },
+            "required": ["width", "height"]
+          },
+          "pageSize": {
+            "type": "object",
+            "properties": { "width": { "type": "number" }, "height": { "type": "number" } },
+            "required": ["width", "height"]
+          },
+          "uiTree": { "type": "array", "items": { "$ref": "#/$defs/__schema0" } },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string", "maxLength": 160 },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "link",
+                    "button",
+                    "tab",
+                    "menu",
+                    "dropdown",
+                    "accordion",
+                    "dialog",
+                    "navigation",
+                    "other"
+                  ]
+                },
+                "label": { "type": "string", "maxLength": 300 },
+                "selector": { "type": "string", "maxLength": 4000 },
+                "safety": {
+                  "type": "string",
+                  "enum": ["safe", "unknown", "destructive", "external", "submission"]
+                },
+                "reason": { "type": "string", "maxLength": 500 },
+                "destinationUrl": { "type": "string", "maxLength": 4096 },
+                "resultingStateId": { "type": "string" },
+                "fingerprint": { "type": "string", "maxLength": 160 },
+                "navigationScope": { "type": "string", "maxLength": 160 },
+                "active": { "type": "boolean" },
+                "method": { "type": "string", "enum": ["click", "hover", "navigation"] },
+                "ariaLabel": { "type": "string", "maxLength": 300 },
+                "role": { "type": "string", "maxLength": 100 },
+                "elementType": { "type": "string", "maxLength": 100 },
+                "priority": { "type": "number" },
+                "contextKey": { "type": "string", "maxLength": 160 },
+                "scrollPositions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "selector": { "type": "string" },
+                      "top": { "type": "number" },
+                      "left": { "type": "number" }
+                    },
+                    "required": ["selector", "top", "left"]
+                  }
+                }
+              },
+              "required": ["id", "type", "label", "selector", "safety", "reason", "fingerprint"]
+            }
+          },
+          "assets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "sourceUrl": { "type": "string", "maxLength": 10000 },
+                "type": { "type": "string", "enum": ["raster", "svg", "reference"] },
+                "hash": { "type": "string" },
+                "width": { "type": "number", "minimum": 0 },
+                "height": { "type": "number", "minimum": 0 },
+                "mime": { "type": "string" },
+                "data": { "type": "string", "maxLength": 4000000 },
+                "rasterFallback": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "string", "maxLength": 1000000 },
+                    "mime": { "type": "string", "const": "image/png" },
+                    "width": { "type": "number", "minimum": 1, "maximum": 4096 },
+                    "height": { "type": "number", "minimum": 1, "maximum": 4096 }
+                  },
+                  "required": ["data", "mime", "width", "height"]
+                },
+                "error": { "type": "string" }
+              },
+              "required": ["id", "sourceUrl", "type", "hash", "width", "height", "mime"]
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": { "type": "string" },
+                "message": { "type": "string" },
+                "nodeId": { "type": "string" },
+                "url": { "type": "string" }
+              },
+              "required": ["code", "message"]
+            }
+          },
+          "observedRoutes": { "type": "array", "items": { "type": "string" } },
+          "accessIssue": {
+            "type": "object",
+            "properties": {
+              "kind": { "type": "string", "enum": ["login", "access", "verification"] },
+              "reason": { "type": "string", "maxLength": 1000 },
+              "selector": { "type": "string", "maxLength": 4000 }
+            },
+            "required": ["kind", "reason"]
+          },
+          "timings": {
+            "type": "object",
+            "propertyNames": { "type": "string", "maxLength": 40 },
+            "additionalProperties": { "type": "number", "minimum": 0 }
+          },
+          "id": { "type": "string" },
+          "route": { "type": "string" },
+          "name": { "type": "string" },
+          "domHash": { "type": "string" },
+          "visualHash": { "type": "string" },
+          "parentStateId": { "type": "string" },
+          "screenshot": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "sourceUrl": { "type": "string", "maxLength": 10000 },
+              "type": { "type": "string", "enum": ["raster", "svg", "reference"] },
+              "hash": { "type": "string" },
+              "width": { "type": "number", "minimum": 0 },
+              "height": { "type": "number", "minimum": 0 },
+              "mime": { "type": "string" },
+              "data": { "type": "string", "maxLength": 4000000 },
+              "rasterFallback": {
+                "type": "object",
+                "properties": {
+                  "data": { "type": "string", "maxLength": 1000000 },
+                  "mime": { "type": "string", "const": "image/png" },
+                  "width": { "type": "number", "minimum": 1, "maximum": 4096 },
+                  "height": { "type": "number", "minimum": 1, "maximum": 4096 }
+                },
+                "required": ["data", "mime", "width", "height"]
+              },
+              "error": { "type": "string" }
+            },
+            "required": ["id", "sourceUrl", "type", "hash", "width", "height", "mime"]
+          },
+          "depth": { "type": "number" },
+          "kind": { "type": "string", "enum": ["page", "modal"] }
+        },
+        "required": [
+          "url",
+          "title",
+          "viewport",
+          "pageSize",
+          "uiTree",
+          "actions",
+          "assets",
+          "warnings",
+          "observedRoutes",
+          "id",
+          "route",
+          "name",
+          "domHash",
+          "depth",
+          "kind"
+        ]
+      }
+    },
+    "edges": {
+      "maxItems": 50000,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "action": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "maxLength": 160 },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "link",
+                  "button",
+                  "tab",
+                  "menu",
+                  "dropdown",
+                  "accordion",
+                  "dialog",
+                  "navigation",
+                  "other"
+                ]
+              },
+              "label": { "type": "string", "maxLength": 300 },
+              "selector": { "type": "string", "maxLength": 4000 },
+              "safety": {
+                "type": "string",
+                "enum": ["safe", "unknown", "destructive", "external", "submission"]
+              },
+              "reason": { "type": "string", "maxLength": 500 },
+              "destinationUrl": { "type": "string", "maxLength": 4096 },
+              "resultingStateId": { "type": "string" },
+              "fingerprint": { "type": "string", "maxLength": 160 },
+              "navigationScope": { "type": "string", "maxLength": 160 },
+              "active": { "type": "boolean" },
+              "method": { "type": "string", "enum": ["click", "hover", "navigation"] },
+              "ariaLabel": { "type": "string", "maxLength": 300 },
+              "role": { "type": "string", "maxLength": 100 },
+              "elementType": { "type": "string", "maxLength": 100 },
+              "priority": { "type": "number" },
+              "contextKey": { "type": "string", "maxLength": 160 },
+              "scrollPositions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "selector": { "type": "string" },
+                    "top": { "type": "number" },
+                    "left": { "type": "number" }
+                  },
+                  "required": ["selector", "top", "left"]
+                }
+              }
+            },
+            "required": ["id", "type", "label", "selector", "safety", "reason", "fingerprint"]
+          },
+          "status": { "type": "string", "enum": ["visited", "duplicate", "skipped", "failed"] },
+          "reason": { "type": "string" }
+        },
+        "required": ["from", "action", "status"]
+      }
+    },
+    "assets": {
+      "maxItems": 10000,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "sourceUrl": { "type": "string", "maxLength": 10000 },
+          "type": { "type": "string", "enum": ["raster", "svg", "reference"] },
+          "hash": { "type": "string" },
+          "width": { "type": "number", "minimum": 0 },
+          "height": { "type": "number", "minimum": 0 },
+          "mime": { "type": "string" },
+          "data": { "type": "string", "maxLength": 4000000 },
+          "rasterFallback": {
+            "type": "object",
+            "properties": {
+              "data": { "type": "string", "maxLength": 1000000 },
+              "mime": { "type": "string", "const": "image/png" },
+              "width": { "type": "number", "minimum": 1, "maximum": 4096 },
+              "height": { "type": "number", "minimum": 1, "maximum": 4096 }
+            },
+            "required": ["data", "mime", "width", "height"]
+          },
+          "error": { "type": "string" }
+        },
+        "required": ["id", "sourceUrl", "type", "hash", "width", "height", "mime"]
+      }
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "signature": { "type": "string" },
+          "nodeIds": { "type": "array", "items": { "type": "string" } },
+          "sourceNodeId": { "type": "string" },
+          "count": { "type": "number" }
+        },
+        "required": ["id", "name", "signature", "nodeIds", "sourceNodeId", "count"]
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" },
+          "nodeId": { "type": "string" },
+          "url": { "type": "string" }
+        },
+        "required": ["code", "message"]
+      }
+    },
+    "logs": {
+      "maxItems": 50000,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "time": { "type": "string" },
+          "category": {
+            "type": "string",
+            "enum": [
+              "DISCOVERY",
+              "STATE",
+              "ACTION",
+              "SAFETY",
+              "DEDUP",
+              "ASSET",
+              "FIGMA",
+              "ERROR",
+              "LIMIT"
+            ]
+          },
+          "message": { "type": "string" }
+        },
+        "required": ["time", "category", "message"]
+      }
+    },
+    "attention": {
+      "maxItems": 50000,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "maxLength": 160 },
+          "kind": {
+            "type": "string",
+            "enum": ["login", "access", "verification", "unsafe", "unknown", "external", "error"]
+          },
+          "status": { "type": "string", "enum": ["pending", "resolved", "skipped", "deferred"] },
+          "sourceUrl": {
+            "type": "string",
+            "maxLength": 4096,
+            "pattern": "^https?:\\/\\/(?![^/]*@)[a-z0-9\\[\\].:-]+(?:[/?#][^\\s]*)?$",
+            "x-patternFlags": "i"
+          },
+          "destinationUrl": {
+            "type": "string",
+            "maxLength": 4096,
+            "pattern": "^https?:\\/\\/(?![^/]*@)[a-z0-9\\[\\].:-]+(?:[/?#][^\\s]*)?$",
+            "x-patternFlags": "i"
+          },
+          "screenName": { "type": "string", "maxLength": 300 },
+          "control": { "type": "string", "maxLength": 300 },
+          "selector": { "type": "string", "maxLength": 4000 },
+          "reason": { "type": "string", "maxLength": 1000 },
+          "nextStep": { "type": "string", "maxLength": 1000 },
+          "occurrences": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+          "locations": {
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sourceUrl": {
+                  "type": "string",
+                  "maxLength": 4096,
+                  "pattern": "^https?:\\/\\/(?![^/]*@)[a-z0-9\\[\\].:-]+(?:[/?#][^\\s]*)?$",
+                  "x-patternFlags": "i"
+                },
+                "selector": { "type": "string", "maxLength": 4000 }
+              },
+              "required": ["sourceUrl"]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "sourceUrl",
+          "screenName",
+          "control",
+          "reason",
+          "nextStep"
+        ]
+      }
+    }
+  },
+  "required": [
+    "version",
+    "project",
+    "screens",
+    "edges",
+    "assets",
+    "components",
+    "warnings",
+    "logs"
+  ],
+  "$defs": {
+    "__schema0": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 160 },
+        "type": {
+          "type": "string",
+          "enum": [
+            "frame",
+            "container",
+            "text",
+            "image",
+            "svg",
+            "button",
+            "input",
+            "link",
+            "nav",
+            "list",
+            "dialog",
+            "form",
+            "icon",
+            "other"
+          ]
+        },
+        "tagName": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 300 },
+        "text": { "type": "string", "maxLength": 100000 },
+        "textLayout": {
+          "type": "object",
+          "properties": {
+            "lineCount": { "type": "integer", "minimum": 1, "maximum": 100000 },
+            "lineHeight": { "type": "number", "minimum": 0.001, "maximum": 100000 },
+            "glyphBounds": {
+              "type": "object",
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" },
+                "width": { "type": "number", "minimum": 0, "maximum": 100000 },
+                "height": { "type": "number", "minimum": 0, "maximum": 100000 }
+              },
+              "required": ["x", "y", "width", "height"]
+            },
+            "lines": {
+              "maxItems": 10000,
+              "type": "array",
+              "items": { "type": "string", "maxLength": 100000 }
+            }
+          },
+          "required": ["lineCount", "lineHeight", "glyphBounds"]
+        },
+        "bounds": {
+          "type": "object",
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "width": { "type": "number", "minimum": 0, "maximum": 100000 },
+            "height": { "type": "number", "minimum": 0, "maximum": 100000 }
+          },
+          "required": ["x", "y", "width", "height"]
+        },
+        "styles": {
+          "type": "object",
+          "propertyNames": { "type": "string", "maxLength": 60 },
+          "additionalProperties": { "type": "string", "maxLength": 10000 }
+        },
+        "attributes": {
+          "type": "object",
+          "propertyNames": { "type": "string", "maxLength": 100 },
+          "additionalProperties": { "type": "string", "maxLength": 1000 }
+        },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/__schema0" } },
+        "assetId": { "type": "string" },
+        "interaction": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "maxLength": 160 },
+            "type": {
+              "type": "string",
+              "enum": [
+                "link",
+                "button",
+                "tab",
+                "menu",
+                "dropdown",
+                "accordion",
+                "dialog",
+                "navigation",
+                "other"
+              ]
+            },
+            "label": { "type": "string", "maxLength": 300 },
+            "selector": { "type": "string", "maxLength": 4000 },
+            "safety": {
+              "type": "string",
+              "enum": ["safe", "unknown", "destructive", "external", "submission"]
+            },
+            "reason": { "type": "string", "maxLength": 500 },
+            "destinationUrl": { "type": "string", "maxLength": 4096 },
+            "resultingStateId": { "type": "string" },
+            "fingerprint": { "type": "string", "maxLength": 160 },
+            "navigationScope": { "type": "string", "maxLength": 160 },
+            "active": { "type": "boolean" },
+            "method": { "type": "string", "enum": ["click", "hover", "navigation"] },
+            "ariaLabel": { "type": "string", "maxLength": 300 },
+            "role": { "type": "string", "maxLength": 100 },
+            "elementType": { "type": "string", "maxLength": 100 },
+            "priority": { "type": "number" },
+            "contextKey": { "type": "string", "maxLength": 160 },
+            "scrollPositions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "selector": { "type": "string" },
+                  "top": { "type": "number" },
+                  "left": { "type": "number" }
+                },
+                "required": ["selector", "top", "left"]
+              }
+            }
+          },
+          "required": ["id", "type", "label", "selector", "safety", "reason", "fingerprint"]
+        }
+      },
+      "required": ["id", "type", "tagName", "name", "bounds", "styles", "attributes", "children"]
+    }
+  }
+}

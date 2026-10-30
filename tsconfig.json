@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "types": ["node", "chrome", "react", "react-dom", "@figma/plugin-typings"],
+    "noEmit": true
+  },
+  "include": [
+    "packages/**/*.ts",
+    "apps/extension/**/*.ts",
+    "apps/extension/**/*.tsx",
+    "apps/web-dashboard/**/*.ts",
+    "apps/web-dashboard/**/*.tsx",
+    "apps/api/**/*.ts",
+    "apps/crawler-worker/**/*.ts",
+    "apps/figma-plugin/src/svg-ui.ts",
+    "scripts/**/*.ts",
+    "tests/**/*.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": ["**/dist/**", "node_modules"]
+}
